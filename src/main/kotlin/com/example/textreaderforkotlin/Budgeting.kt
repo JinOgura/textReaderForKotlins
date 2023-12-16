@@ -49,7 +49,7 @@ class Budgeting {
     private val dateFormat = SimpleDateFormat("yyyy/MM/dd")
     private var leftMoney = 0
     private val alreadySpent = "C:\\Users\\rkfeo\\Downloads\\家計簿\\${getFileDateName[0]}\\使用履歴.xlsx"
-    private val dCard = "C:\\Users\\rkfeo\\Downloads\\家計簿\\${getFileDateName[0]}\\${getFileDateName[1]}.csv"
+    private val dCard = "C:\\Users\\rkfeo\\Downloads\\家計簿\\${getFileDateName[0]}\\${getFileDateName[2]}.csv"
     private val showDiffPath = "C:\\Users\\rkfeo\\Downloads\\家計簿\\${getFileDateName[0]}\\output.csv"
 
     fun run() {
