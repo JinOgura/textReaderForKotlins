@@ -100,6 +100,7 @@ class Budgeting {
 
         var resultMonth = ""
         var resultWeek = ""
+        updatePaidAlready(false)
         if (todayDayAndDate[0] == lastWeek) {
             val resultStringList = updatePaidAlready(true)
             resultWeek = "${resultStringList.joinToString(separator = "")}\n$result"
