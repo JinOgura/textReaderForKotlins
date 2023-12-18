@@ -45,6 +45,7 @@ class Budgeting {
     private var lastMonthDate = 15
     private var housingCost = "95000"
     private var palSystem = "13000"
+    private var jinCost = "15000"
     private var telCost = "8000"
 
     // 下のデータは基本修正しない
@@ -94,9 +95,10 @@ class Budgeting {
         val housingCostInt = housingCost.toIntOrNull() ?: 0
         val palSystemInt = palSystem.toIntOrNull() ?: 0
         val telCostInt = telCost.toIntOrNull() ?: 0
-        leftMoney = livingBudget - paid - housingCostInt - palSystemInt - telCostInt
+        val jinCostInt = jinCost.toIntOrNull() ?: 0
+        leftMoney = livingBudget - paid - housingCostInt - palSystemInt - telCostInt - jinCostInt
         var result = "使える金額: ${leftMoney}円" +
-                "\n使った金額: ${paid}円\n\n概算内容: 家賃等(${housingCost}), パルシステム(${palSystem}), 携帯料金(${telCost})\n\n" +
+                "\n使った金額: ${paid}円\n\n概算内容: 家賃等(${housingCost}), パルシステム(${palSystem}), 携帯料金(${telCost}),\n ジンお小遣い(${jinCost}(確定))\n\n" +
                 outputResult
 
         val today: LocalDate = LocalDate.now()
@@ -126,7 +128,7 @@ class Budgeting {
             if (todayDayAndDate[1] == lastMonthDate) {
                 sendEmail(resultMonth)
             }
-            if (todayDayAndDate[0] != lastWeek && todayDayAndDate[1] != lastMonthDate) {
+            if (todayDayAndDate[0] != lastWeek && todayDayAndDate[1] != lastMonthDate && result != "") {
                 sendEmail(result)
             }
         }
@@ -139,7 +141,7 @@ class Budgeting {
                 sendMessageToLineBot(userId["jin"], resultMonth.replace("\n", """\n"""))
                 sendMessageToLineBot(userId["honoka"], resultMonth.replace("\n", """\n"""))
             }
-            if (todayDayAndDate[1] != lastMonthDate && todayDayAndDate[0] != lastWeek) {
+            if (todayDayAndDate[1] != lastMonthDate && todayDayAndDate[0] != lastWeek && result != "") {
                 sendMessageToLineBot(userId["jin"], result.replace("\n", """\n"""))
                 sendMessageToLineBot(userId["honoka"], result.replace("\n", """\n"""))
             }
@@ -442,7 +444,14 @@ class Budgeting {
                 stringList.add("\n")
             }
         } else if (nowIsWhat == "nothing") {
-            val lines = File("${budgetingPath}weekendResult.txt").readLines()
+            val lines: List<String>
+            try {
+                lines = File("${budgetingPath}weekendResult.txt").readLines()
+                // ファイルが存在する場合の処理
+            } catch (e: Exception) {
+                System.err.println("エラー: weekendResult.txtが存在しません")
+                return stringList
+            }
             val date = lines[0].trim()
             val value = lines[1].trim()
             val referenceDate = SimpleDateFormat("yyyy/MM/dd").parse(date)
