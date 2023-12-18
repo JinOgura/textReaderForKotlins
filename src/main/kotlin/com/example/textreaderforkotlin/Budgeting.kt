@@ -141,6 +141,7 @@ class Budgeting {
             }
             if (todayDayAndDate[1] != lastMonthDate && todayDayAndDate[0] != lastWeek) {
                 sendMessageToLineBot(userId["jin"], result.replace("\n", """\n"""))
+                sendMessageToLineBot(userId["honoka"], result.replace("\n", """\n"""))
             }
         }
     }
