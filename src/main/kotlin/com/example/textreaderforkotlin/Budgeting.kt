@@ -52,7 +52,7 @@ class Budgeting {
     private val charSet = Charset.forName("Shift-JIS")
     private val dateFormat = SimpleDateFormat("yyyy/MM/dd")
     private var leftMoney = 0
-    private val budgetingPath = "/Users/jin.ogura/Desktop/${getFileDateName[0]}/"
+    private val budgetingPath = "/Users/jin.ogura/Desktop/bugit/${getFileDateName[0]}/"
     private val alreadySpent = "${budgetingPath}使用履歴.xlsx"
     private val dCard = "${budgetingPath}${getFileDateName[2]}.csv"
     private val showDiffPath = "${budgetingPath}output.csv"
@@ -100,7 +100,7 @@ class Budgeting {
         var result = "使える金額: ${leftMoney}円" +
                 "\n使った金額: ${paid}円\n\n概算内容: 家賃等(${housingCost}), パルシステム(${palSystem}), 携帯料金(${telCost}),\n ジンお小遣い(${jinCost}(確定))\n\n" +
                 outputResult
-
+        println(result)
         val today: LocalDate = LocalDate.now()
         val todayDayAndDate = listOf(today.dayOfWeek.toString(), today.dayOfMonth)
 
@@ -120,7 +120,6 @@ class Budgeting {
             result = getResultStringList("nothing", resultInfo.titles, resultInfo.money, resultInfo.dates)
                 .joinToString(separator = "")
         }
-        println(result)
         if (sendMailFlg) {
             if (todayDayAndDate[0] == lastWeek) {
                 sendEmail(resultWeek)
