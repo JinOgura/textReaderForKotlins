@@ -48,9 +48,9 @@ class Budgeting {
     private val charSet = Charset.forName("Shift-JIS")
     private val dateFormat = SimpleDateFormat("yyyy/MM/dd")
     private var leftMoney = 0
-    private val alreadySpent = "C:\\Users\\rkfeo\\Downloads\\家計簿\\${getFileDateName[0]}\\使用履歴.xlsx"
-    private val dCard = "C:\\Users\\rkfeo\\Downloads\\家計簿\\${getFileDateName[0]}\\${getFileDateName[2]}.csv"
-    private val showDiffPath = "C:\\Users\\rkfeo\\Downloads\\家計簿\\${getFileDateName[0]}\\output.csv"
+    private val alreadySpent = "/Users/jin.ogura/Desktop/${getFileDateName[0]}/使用履歴.xlsx"
+    private val dCard = "/Users/jin.ogura/Desktop/${getFileDateName[0]}/${getFileDateName[2]}.csv"
+    private val showDiffPath = "/Users/jin.ogura/Desktop/${getFileDateName[0]}/output.csv"
 
     fun run() {
         val fileInfo = getFileInfo()
@@ -91,7 +91,7 @@ class Budgeting {
         val palSystemInt = palSystem.toIntOrNull() ?: 0
         val telCostInt = telCost.toIntOrNull() ?: 0
         leftMoney = livingBudget - paid - housingCostInt - palSystemInt - telCostInt
-        val result = "使える金額: ${leftMoney}円" +
+        var result = "使える金額: ${leftMoney}円" +
                 "\n使った金額: ${paid}円\n\n概算内容: 家賃等(${housingCost}), パルシステム(${palSystem}), 携帯料金(${telCost})\n\n" +
                 outputResult
 
@@ -100,14 +100,19 @@ class Budgeting {
 
         var resultMonth = ""
         var resultWeek = ""
-        updatePaidAlready(false)
+        val resultInfo = updatePaidAlready()
         if (todayDayAndDate[0] == lastWeek) {
-            val resultStringList = updatePaidAlready(true)
+            val resultStringList = getResultStringList("weekend", resultInfo.titles, resultInfo.money, resultInfo.dates)
             resultWeek = "${resultStringList.joinToString(separator = "")}\n$result"
         }
         if (todayDayAndDate[1] == lastMonthDate) {
-            val resultStringList = updatePaidAlready(false)
+            val resultStringList =
+                getResultStringList("monthend", resultInfo.titles, resultInfo.money, resultInfo.dates)
             resultMonth = "${resultStringList.joinToString(separator = "")}\n以上一ヶ月の決算です\n$result"
+        }
+        if (todayDayAndDate[1] != lastMonthDate && todayDayAndDate[0] != lastWeek) {
+            result = getResultStringList("nothing", resultInfo.titles, resultInfo.money, resultInfo.dates)
+                .joinToString(separator = "")
         }
         println(result)
         if (sendMailFlg) {
@@ -136,7 +141,7 @@ class Budgeting {
         }
     }
 
-    private fun updatePaidAlready(isClosingDay: Boolean): MutableList<String> {
+    private fun updatePaidAlready(): CsvData {
         val fileInfo = getFileInfo()
 
         for (moneyAmount in fileInfo.dCardInfoMoney) {
@@ -156,7 +161,6 @@ class Budgeting {
         val numbers = mutableListOf<Int>()
         val dates = mutableListOf<Date>()
 
-        val stringList = mutableListOf<String>()
         for (i in fileInfo.dCardInfoTitle.indices) {
             val formattedDate = dateFormat.format(fileInfo.dCardInfoDate[i])
             val row = sheets.createRow(i)
@@ -179,94 +183,13 @@ class Budgeting {
             numbers.add(fileInfo.alreadySpentMoney[i])
             fileInfo.alreadySpentTitle[i]?.let { titles.add(it) }
         }
-        val currentDate = Date() // 現在の日付を取得
-
-        val cal = Calendar.getInstance()
-        cal.time = currentDate
-
-        var weeklyTotalAmount = 0 // 一週間の金額の総額
-
-        // 今日が日曜日の場合、その週の月曜日から日曜日までの範囲を取得
-        if (isClosingDay) {
-            cal.add(Calendar.DAY_OF_WEEK, -6) // 今日から週の始め（月曜日）まで戻る
-            val startDate = cal.time // 週の始め（月曜日）
-            cal.add(Calendar.DAY_OF_WEEK, 6) // 週の終わり（日曜日）まで進む
-            val endDate = cal.time // 週の終わり（日曜日）
-
-            val groupedByDate = dates.indices
-                .filter {
-                    val date = dates[it]
-                    date in startDate..endDate
-                }
-                .groupBy {
-                    val formattedDate = dateFormat.format(dates[it])
-                    val dayOfWeek = SimpleDateFormat("E", Locale.getDefault()).format(dates[it])
-                    "$formattedDate($dayOfWeek)"
-                }
-
-            // 日付でソート
-            val sortedGrouped = groupedByDate.toList().sortedBy { (date, _) ->
-                SimpleDateFormat("yyyy/MM/dd(E)", Locale.getDefault()).parse(date)
-            }.toMap()
-
-            for ((date, indices) in sortedGrouped) {
-                stringList.add("$date\n")
-
-                var dailyTotalAmount = 0 // 日ごとの金額の総額
-
-                for (index in indices) {
-                    val title = titles[index]
-                    val amount = numbers[index]
-                    stringList.add("$title: ${amount}円\n")
-                    dailyTotalAmount += amount
-                }
-
-                stringList.add("\n")
-                weeklyTotalAmount += dailyTotalAmount
-            }
-
-            // 一週間の金額の総額を結果に追加
-            stringList.add("一週間の使用総額：${weeklyTotalAmount}円\n")
-            val remainDays = getRemainDays()
-            var multiple = 7
-            if (remainDays < 7) {
-                multiple = remainDays
-            }
-            stringList.add("次の週に使える金額：${leftMoney / remainDays * multiple}\n")
-        } else {
-            // 今日が日曜日でない場合は、通常の週の範囲を取得
-            val groupedByDate = dates.indices
-                .groupBy {
-                    val formattedDate = dateFormat.format(dates[it])
-                    val dayOfWeek = SimpleDateFormat("E", Locale.getDefault()).format(dates[it])
-                    "$formattedDate($dayOfWeek)"
-                }
-
-            // 日付でソート
-            val sortedGrouped = groupedByDate.toList().sortedBy { (date, _) ->
-                SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).parse(date)
-            }.toMap()
-
-            for ((date, indices) in sortedGrouped) {
-                stringList.add("$date\n")
-
-                for (index in indices) {
-                    val title = titles[index]
-                    val amount = numbers[index]
-                    stringList.add("$title: ${amount}円\n")
-                }
-
-                stringList.add("\n")
-            }
-
-        }
 
         val fileOut = FileOutputStream(alreadySpent)
         workbook.write(fileOut)
         fileOut.close()
         workbook.close()
 
-        return stringList
+        return CsvData(titles, numbers, dates)
     }
 
     private fun getFileInfo(): FileInfo {
@@ -413,6 +336,123 @@ class Budgeting {
         }
 
         return dateList
+    }
+
+    private fun getResultStringList(
+        nowIsWhat: String,
+        titles: MutableList<String>,
+        numbers: MutableList<Int>,
+        dates: MutableList<Date>
+    ): MutableList<String> {
+        val currentDate = Date() // 現在の日付を取得
+
+        val cal = Calendar.getInstance()
+        cal.time = currentDate
+        cal.apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+
+        var weeklyTotalAmount = 0 // 一週間の金額の総額
+        val stringList = mutableListOf<String>()
+
+        // 今日が日曜日の場合、その週の月曜日から日曜日までの範囲を取得
+        if (nowIsWhat == "weekend") {
+            cal.add(Calendar.DAY_OF_WEEK, -6) // 今日から週の始め（月曜日）まで戻る
+            val startDate = cal.time // 週の始め（月曜日）
+            cal.add(Calendar.DAY_OF_WEEK, 6) // 週の終わり（日曜日）まで進む
+            val endDate = cal.time // 週の終わり（日曜日）
+
+            val groupedByDate = dates.indices
+                .filter {
+                    val date = dates[it]
+                    date in startDate..endDate
+                }
+                .groupBy {
+                    val formattedDate = dateFormat.format(dates[it])
+                    val dayOfWeek = SimpleDateFormat("E", Locale.getDefault()).format(dates[it])
+                    "$formattedDate($dayOfWeek)"
+                }
+
+            // 日付でソート
+            val sortedGrouped = groupedByDate.toList().sortedBy { (date, _) ->
+                SimpleDateFormat("yyyy/MM/dd(E)", Locale.getDefault()).parse(date)
+            }.toMap()
+
+            for ((date, indices) in sortedGrouped) {
+                stringList.add("$date\n")
+
+                var dailyTotalAmount = 0 // 日ごとの金額の総額
+
+                for (index in indices) {
+                    val title = titles[index]
+                    val amount = numbers[index]
+                    stringList.add("$title: ${amount}円\n")
+                    dailyTotalAmount += amount
+                }
+
+                stringList.add("\n")
+                weeklyTotalAmount += dailyTotalAmount
+            }
+
+            // 一週間の金額の総額を結果に追加
+            stringList.add("一週間の使用総額：${weeklyTotalAmount}円\n")
+            val remainDays = getRemainDays()
+            var multiple = 7
+            if (remainDays < 7) {
+                multiple = remainDays
+            }
+            val nextWeekAllowance = leftMoney / remainDays * multiple
+            val stringEndDate = SimpleDateFormat("yyyy/MM/dd").format(endDate)
+            stringList.add("次の週に使える金額：${nextWeekAllowance}\n")
+            val outputFile = File("/Users/jin.ogura/Desktop/weekEndResult.txt")
+            outputFile.printWriter().use { writer ->
+                writer.println(stringEndDate)
+                writer.println(nextWeekAllowance) // 整数に変換して書き込み
+            }
+        } else if (nowIsWhat == "monthend") {
+            // 今日が日曜日でない場合は、通常の週の範囲を取得
+            val groupedByDate = dates.indices
+                .groupBy {
+                    val formattedDate = dateFormat.format(dates[it])
+                    val dayOfWeek = SimpleDateFormat("E", Locale.getDefault()).format(dates[it])
+                    "$formattedDate($dayOfWeek)"
+                }
+
+            // 日付でソート
+            val sortedGrouped = groupedByDate.toList().sortedBy { (date, _) ->
+                SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).parse(date)
+            }.toMap()
+
+            for ((date, indices) in sortedGrouped) {
+                stringList.add("$date\n")
+
+                for (index in indices) {
+                    val title = titles[index]
+                    val amount = numbers[index]
+                    stringList.add("$title: ${amount}円\n")
+                }
+                stringList.add("\n")
+            }
+        } else if (nowIsWhat == "nothing") {
+            val lines = File("/Users/jin.ogura/Desktop/weekendResult.txt").readLines()
+            val date = lines[0].trim()
+            val value = lines[1].trim()
+            val referenceDate = SimpleDateFormat("yyyy/MM/dd").parse(date)
+            for (i in titles.indices) {
+                if(titles[i].contains("賃料等") || titles[i].contains("ドコモご利用料金") || titles[i].contains("パルシステム")) {
+                    continue
+                }
+                if (dates[i].after(referenceDate)) {
+                    val amount = numbers[i]
+                    weeklyTotalAmount += amount
+                }
+            }
+            stringList.add("今週残ってる金額：${value.toInt() - weeklyTotalAmount}円\n")
+        }
+        return stringList
     }
 }
 

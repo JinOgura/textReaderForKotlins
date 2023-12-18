@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="textReaderForKotlins" target="18" />
+      <module name="textReaderForKotlins" target="16" />
     </bytecodeTargetLevel>
   </component>
 </project>

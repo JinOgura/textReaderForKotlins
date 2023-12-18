@@ -8,7 +8,7 @@
           <stringArguments>
             <stringArg name="jvmTarget" arg="11" />
             <stringArg name="apiVersion" arg="1.4" />
-            <stringArg name="languageVersion" arg="1.4" />
+            <stringArg name="languageVersion" arg="1.6" />
           </stringArguments>
           <arrayArguments>
             <arrayArg name="pluginClasspaths" />
@@ -18,7 +18,7 @@
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_18">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_16">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
@@ -49,13 +49,13 @@
     <orderEntry type="library" name="Maven: org.apache.commons:commons-compress:1.19" level="project" />
     <orderEntry type="library" name="Maven: com.github.virtuald:curvesapi:1.06" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:19.0.2.1" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:win:19.0.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:mac:19.0.2.1" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:19.0.2.1" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:win:19.0.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:mac:19.0.2.1" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-base:19.0.2.1" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-base:win:19.0.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-base:mac:19.0.2.1" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:19.0.2.1" level="project" />
-    <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:win:19.0.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:mac:19.0.2.1" level="project" />
     <orderEntry type="library" name="Maven: com.dlsc.formsfx:formsfx-core:11.6.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.9.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.opentest4j:opentest4j:1.2.0" level="project" />
@@ -63,7 +63,7 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.apiguardian:apiguardian-api:1.1.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-engine:5.9.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-engine:1.9.2" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.10" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.10" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.10" level="project" />
   </component>
 </module>
