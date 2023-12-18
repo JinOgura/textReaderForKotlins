@@ -20,16 +20,23 @@ import javafx.scene.Node
 import javafx.stage.Screen
 import javafx.geometry.Insets
 
+fun main() {
+    Application.launch(TextReaderForKotlin::class.java)
+}
+
 class TextReaderForKotlin : Application() {
     private var paragraphs: List<String> = mutableListOf()
     private var currentIndex = 0
     private val currentText = Text()
     private val allReadText = StringBuilder()
-    private var filePath = "C:\\Users\\rkfeo\\Downloads\\今日の考察\\勉強\\merged.txt"
+    private var filePath =
+        "/Users/jin.ogura/IdeaProjects/textReaderForKotlins/src/main/kotlin/com/example/textreaderforkotlin/指摘事項.txt"
+    private val backgroundImageUrl = "https://pbs.twimg.com/media/EwZNQd0WgAMVOCK?format=jpg&name=large"
     private var rightClickCount = 0
     private var originalFontSize = 40.0
     private var messageBox = Rectangle(0.0, 0.0)
     private var endFlg = false
+    private var showNumbers = true
 
     override fun start(stage: Stage) {
         paragraphs = readParagraphs(filePath)
@@ -39,8 +46,6 @@ class TextReaderForKotlin : Application() {
             Platform.exit()
             return
         }
-
-        originalFontSize = 40.0
 
         val fontSize = 40.0
         currentText.font = Font.font(fontSize)
@@ -59,10 +64,6 @@ class TextReaderForKotlin : Application() {
         scrollPane.content = textPane
 
         val scene = Scene(scrollPane, 1280.0, 720.0)
-
-        // 背景画像を設定する
-        val backgroundImageUrl =
-            "https://pbs.twimg.com/media/EIngPWeWwAA_P_6?format=jpg&name=large"
 
         val imageView = try {
             ImageView(Image(backgroundImageUrl))
@@ -144,9 +145,17 @@ class TextReaderForKotlin : Application() {
     private fun showNextParagraph(scrollPane: ScrollPane) {
         rightClickCount = 0
         if (currentIndex < paragraphs.size) {
-            val paragraph = paragraphs[currentIndex]
+            var paragraph = paragraphs[currentIndex]
 
-            if (!endFlg) allReadText.append(paragraph.replace("\\n", "\n")).append("\n\n")
+
+            if (!endFlg) {
+                paragraph = if (showNumbers) {
+                    "(${currentIndex + 1}/${paragraphs.size}) ${paragraphs[currentIndex]}"
+                } else {
+                    paragraphs[currentIndex]
+                }
+                allReadText.append(paragraph.replace("\\n", "\n")).append("\n\n")
+            }
 
             currentText.text = paragraph.replace("\\n", "\n")
 
@@ -191,12 +200,5 @@ class TextReaderForKotlin : Application() {
         scrollPane.layout()
 
         scrollPane.vvalue = scrollPane.vmax
-    }
-
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) {
-            launch(TextReaderForKotlin::class.java)
-        }
     }
 }

@@ -1,0 +1,287 @@
+借用書返却時に神村さんにハンコもらう必要ある。
+
+prod alertは基本小倉が対応する。
+
+hoop, grabでcontrollerから呼ばれる作業はタイムアウト処理がいらない。
+
+hoop 1717は3.7の中に含まれるという認識で大丈夫か
+
+next3.7ブランチのタイムアウト処理要らないなら削りましょうか
+
+
+group_id は varchar255に
+
+history_idをhistory_noに変更
+
+history_tsを設定
+
+group_historyにuserつける
+
+if (groupHistoryInfo.isNotEmpty() && groupHistoryInfo.first().groupId == groupId) or追加する
+
+v21 -> v20
+
+21宣言
+
+さっきのバグ修正するのを116に含める
+
+
+11月21日朝イチでCI確認して、半澤さんのマージが終わってたら、二つのブランチマージする。
+
+121テストいっぱいして、プルリク俺が5ヶ月前にあげたやつ内容調べる。
+
+
+デプロイ終わるとguam-sys3人のところに報告
+
+定期変数のプルリクにバリデーション何が追加されたかを記載する
+
+開発93番準備する(資料もらった)
+
+
+3.7リリースは年内？
+
+今週のどっかでポイントくじを開発環境でテスト
+
+
+93番。まず、パターンをまとめた資料を作る。
+
+オプションを羅列して、その組み合わせを3つくらい作る。
+
+今出た案だと、一発で画面上の全てのメッセージを送信して待つか
+
+一見一見発話が行われるのを確認してから進むか
+
+そしてページングするかしないか
+
+送信中は出すか出さないか
+
+
+ポイントくじ登録及び実施方法
+
+https://drive.google.com/drive/u/0/folders/1Ja6wSE-JMgSW7iMsvb68UXVzDOrzehP2
+
+にアクセス。
+
+lotteriesを修正。
+
+(詳細は後で書く)
+
+それぞれの画像を準備する
+
+(詳細は後で書く)
+
+https://github.com/DeNA/hoop-assets/actions/workflows/import-lotteries.yml
+
+ここで
+
+run workflowを押して
+
+lotteries folder nameに
+
+test-lottery2023-24-04 と入力
+
+適用させたい環境[dev,stg,prod]を選んでdeploy lotteriesを選択。
+例：[stg] deploy lotteries
+
+run workflowで
+
+test-lottery2023-24-04 と入力
+
+https://github.com/DeNA/hoop-server/actions
+
+こっちのリンクに移動
+
+commandを実行する環境[dev,stg,prod]を選んで選択
+例：run-command-stg
+
+run workflowで
+
+一番上の空欄に
+
+register_lottery_prize_items　を入力
+
+arg1に　-l を入力
+
+https://docs.google.com/spreadsheets/d/1oCQIiALX4EAiutjNQcSui4WKFivppiG8RUTx_HHpnvM/edit#gid=0
+
+このシートのid(L + 年 + 番号)列で入力した値をarg2に入力
+
+例：QA_L230014
+
+処理が終わった後、スラックのhoop-環境-notifyチャンネルにRegisterLotteryPrizeItems: succeeded lotteryID:ホゲホゲと出力されることを確認。
+
+
+明日朝イチでguamマージ
+
+明日朝会で福井さんレビュー、1717レビュー
+
+
+明日レビュー
+
+ぼっこーの買い物対応サービスがスタートしたみたい
+
+デブのテストをすること、報告はさっきのスレッドに
+
+commandに注釈入れる。
+
+福井さんに報告
+
+福井さんに1720のテストの件相談
+
+1717プルリク作成すること
+
+
+GRANT SELECT ON analysis_message TO federation_user;
+GRANT SELECT ON user_group_history TO federation_user;
+
+本番環境の適用の時上の実行を忘れないこと。
+
+
+1720テストは進めなくてもいい。まず差分作ってから話し合って進めてみよう。
+
+LINE API変更修正でシリアルコード対応に関するチケットができる予定。
+
+3.7に含まれるかも？
+
+
+2023　11　29　課内会議
+
+体制変更がある(菅井さん)
+
+具体的な内容はまだ
+
+セキュリティ更新なし
+
+
+https://github.com/DeNA/hoop-server/blob/com.example.practice.com.example.practice.com.example.practice.com.example.practice.com.example.practice.com.example.practice.com.example.practice.com.example.practice.com.example.practice.com.example.practice.main/.github/workflows/run-command-dev.yml#L13
+
+で入力欄を無数に増やせる。
+
+HOOP-1712をやったあと、福井さんに報告すること。
+
+十六時からみんな集まって作業。
+
+
+alertのstopは1時間後にくる。1時間過ぎてstopが来た時は、追加でerrorが発生しているってことだから確認すること。
+
+
+grap,hoop　工数わけて登録
+MTGの時間とか考えて。
+おじさんMTGは三十分。
+
+福井さんに修正
+
+確認：
+「grap,hoop　工数わけて登録
+MTGの時間とか考えて。
+おじさんMTGは三十分。」
+これ
+12月からってことですよね？
+
+guam, (grab, hoop)どれだけ工数使ってるかまとめる。11月12月。まあそれ以降も。
+
+朝会は共通ということで。
+
+
+一定時間 ( batch 実行間隔よりも短い時間 ) での処理打ち切りも確認お願いします
+
+↑　これをチケットのコメント欄に記載する。
+
+日付なし定期変数が元々は全部削除して登録し直すやり方だったけど、まず全部消すという内容を以前無くしたっぽい
+
+日付なし定期変数で全部削除フラグつけても一件しか消えない。
+
+まずはqa優先して、その後上の問題は直す。(国枝さんの方式に戻す案が有力)
+
+
+１から６までのあいだguamのMTGの割合を調べる。
+
+hoop-sysつけて冬季休暇カレンダーに入れる。冬季休暇(FSI小倉)
+
+レビュー申請するときにタイムアウトの設定に対する説明を書く。スラックが飛ばされることとか。
+
+タイムアウトは2分に設定。
+
+
+guam資料作る
+
+eラーニング受ける(ちょっと後回してもいい)
+
+13日出社
+
+絶対に実装する内容
+
+内容を置き換えるときは、右下に編集ボタンをクリックし、クリックしたらシンプルな修正画面がポップアップで表示される
+
+全体・個別再生ボタン
+
+定期変数編集機能
+
+確認事項
+
+ページングは必要か(現在20231207基準 18,115件存在)
+
+再生途中で止める
+・止めたところから再生する機能
+
+ユカイさんのサーバーから既読の情報が届いてから(callback)次に進む(工数は少し多め)
+・画面の方で周期的にステータス確認を行う必要がありDBの負荷が上がる可能性がある
+・送信中のステータスは必要か
+
+一気に送信し、一気に再生させる(一番工数は減らせる。ステータスに送信中は含まれない)
+
+検索機能の検索機能は今のところ
+
+定期変数名、日付開始、日付終了、日付なし
+
+の組み合わせで問題ないか
+
+
+1723のコメントにcliにした理由を残す。
+
+time when promotion start close
+
+→
+
+time when promotion close　に変える。
+
+todo readmeに記載。いつか？定例のMTGで確認？
+
+1724に時間設定の理由説明コメント
+
+slack投げても大丈夫か確認1724で。
+
+
+追加の案
+
+・間隔開けて送信して発話させる(10秒間隔とか)(文字数に応じて送信間隔を変えるか)
+
+・次へボタン(エンターキー含め)を追加する案(再生中のダイアログが表示され、編集もできる)。ステータスは残してもいいかも
+
+一気は削除
+
+ボタンは一つにまとめる
+
+編集はダイアログ
+
+
+responseは大体protoを使っているから、protoを削除すると使えなくなるということを覚える。
+
+
+福井さんにマージして、stgテストしますみたいなスラック投げる。
+
+まあ、午後のトッチかで終わりましたーでいいかな。
+
+経費精算送ること。
+
+
+ダイアログ開いた時、次へにカーソルが当てられる。→エンター押すと次のものが再生される
+
+
+福井さんに報告
+
+1724にバグの原因と影響範囲を対応策。コメント残す。本番には影響ないよとか。
+
+プロモーション対応の手順作成。
+
+
