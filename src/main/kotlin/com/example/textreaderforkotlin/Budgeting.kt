@@ -454,7 +454,7 @@ class Budgeting {
                     weeklyTotalAmount += amount
                 }
             }
-            stringList.add("今週残ってる金額：${value.toInt() - weeklyTotalAmount}円\n")
+            stringList.add("今週残ってる金額：${value.toInt() - weeklyTotalAmount}円")
         }
         return stringList
     }
