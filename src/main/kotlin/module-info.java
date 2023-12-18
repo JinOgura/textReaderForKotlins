@@ -12,6 +12,7 @@ module com.example.textreaderforkotlin {
     requires okhttp3;
     requires poi.ooxml;
     requires poi.ooxml.schemas;
+    requires mp3spi;
 
     opens com.example.textreaderforkotlin to javafx.fxml;
     exports com.example.textreaderforkotlin;

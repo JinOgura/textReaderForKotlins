@@ -14,6 +14,9 @@ import org.apache.poi.xssf.usermodel.*
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
+fun main() {
+    Budgeting().run()
+}
 data class FileInfo(
     val alreadySpentTitle: MutableList<String?>,
     val alreadySpentMoney: MutableList<Int>,
@@ -454,8 +457,4 @@ class Budgeting {
         }
         return stringList
     }
-}
-
-fun main() {
-    Budgeting().run()
 }
