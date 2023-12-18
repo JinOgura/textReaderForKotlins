@@ -52,7 +52,7 @@ class Budgeting {
     private val charSet = Charset.forName("Shift-JIS")
     private val dateFormat = SimpleDateFormat("yyyy/MM/dd")
     private var leftMoney = 0
-    private val budgetingPath = "/Users/jin.ogura/Desktop/${getFileDateName[0]}/"
+    private val budgetingPath = "/Users/jin.ogura/Desktop/bugit/${getFileDateName[0]}/"
     private val alreadySpent = "${budgetingPath}使用履歴.xlsx"
     private val dCard = "${budgetingPath}${getFileDateName[2]}.csv"
     private val showDiffPath = "${budgetingPath}output.csv"
