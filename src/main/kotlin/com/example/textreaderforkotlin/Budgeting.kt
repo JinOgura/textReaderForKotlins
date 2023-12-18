@@ -51,9 +51,10 @@ class Budgeting {
     private val charSet = Charset.forName("Shift-JIS")
     private val dateFormat = SimpleDateFormat("yyyy/MM/dd")
     private var leftMoney = 0
-    private val alreadySpent = "/Users/jin.ogura/Desktop/${getFileDateName[0]}/使用履歴.xlsx"
-    private val dCard = "/Users/jin.ogura/Desktop/${getFileDateName[0]}/${getFileDateName[2]}.csv"
-    private val showDiffPath = "/Users/jin.ogura/Desktop/${getFileDateName[0]}/output.csv"
+    private val budgetingPath = "/Users/jin.ogura/Desktop/${getFileDateName[0]}/"
+    private val alreadySpent = "${budgetingPath}使用履歴.xlsx"
+    private val dCard = "${budgetingPath}${getFileDateName[2]}.csv"
+    private val showDiffPath = "${budgetingPath}output.csv"
 
     fun run() {
         val fileInfo = getFileInfo()
@@ -410,7 +411,7 @@ class Budgeting {
             val nextWeekAllowance = leftMoney / remainDays * multiple
             val stringEndDate = SimpleDateFormat("yyyy/MM/dd").format(endDate)
             stringList.add("次の週に使える金額：${nextWeekAllowance}\n")
-            val outputFile = File("/Users/jin.ogura/Desktop/weekEndResult.txt")
+            val outputFile = File("${budgetingPath}weekEndResult.txt")
             outputFile.printWriter().use { writer ->
                 writer.println(stringEndDate)
                 writer.println(nextWeekAllowance) // 整数に変換して書き込み
@@ -440,7 +441,7 @@ class Budgeting {
                 stringList.add("\n")
             }
         } else if (nowIsWhat == "nothing") {
-            val lines = File("/Users/jin.ogura/Desktop/weekendResult.txt").readLines()
+            val lines = File("${budgetingPath}weekendResult.txt").readLines()
             val date = lines[0].trim()
             val value = lines[1].trim()
             val referenceDate = SimpleDateFormat("yyyy/MM/dd").parse(date)
@@ -453,7 +454,7 @@ class Budgeting {
                     weeklyTotalAmount += amount
                 }
             }
-            stringList.add("今週残ってる金額：${value.toInt() - weeklyTotalAmount}円\n")
+            stringList.add("今週残ってる金額：${value.toInt() - weeklyTotalAmount}円")
         }
         return stringList
     }
