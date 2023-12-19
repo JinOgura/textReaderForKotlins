@@ -484,7 +484,7 @@ class Budgeting {
         }
         return stringList
     }
-    fun convertToLocalDateToDate(localDate: LocalDate): Date {
+    private fun convertToLocalDateToDate(localDate: LocalDate): Date {
         val zoneId: ZoneId = ZoneId.systemDefault()
         return Date.from(localDate.atStartOfDay(zoneId).toInstant())
     }
