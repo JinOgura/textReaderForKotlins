@@ -58,6 +58,7 @@ class Budgeting {
     private val alreadySpent = "${budgetingPath}使用履歴.xlsx"
     private val dCard = "${budgetingPath}${getFileDateName[2]}.csv"
     private val showDiffPath = "${budgetingPath}output.csv"
+    private val today: LocalDate = LocalDate.now()
 
     fun run() {
         val fileInfo = getFileInfo()
@@ -103,7 +104,6 @@ class Budgeting {
                 "\n使った金額: ${paid}円\n\n概算内容: 家賃等(${housingCost}), パルシステム(${palSystem}), 携帯料金(${telCost}),\n ジンお小遣い(${jinCost}(確定))\n\n" +
                 outputResult
         println(result)
-        val today: LocalDate = LocalDate.now()
         val todayDayAndDate = listOf(today.dayOfWeek.toString(), today.dayOfMonth)
 
         var resultMonth = ""
@@ -323,14 +323,13 @@ class Budgeting {
     }
 
     private fun getRemainDays(): Int {
-        val currentDateTime = LocalDate.now()
-        val current15th = currentDateTime.withDayOfMonth(lastMonthDate)
-        val targetDate = if (currentDateTime.dayOfMonth < lastMonthDate) {
+        val current15th = today.withDayOfMonth(lastMonthDate)
+        val targetDate = if (today.dayOfMonth < lastMonthDate) {
             current15th
         } else {
             current15th.plusMonths(1)
         }
-        return ChronoUnit.DAYS.between(currentDateTime, targetDate).toInt()
+        return ChronoUnit.DAYS.between(today, targetDate).toInt()
     }
 
     private fun generateDateList(startDate: String): List<String> {
@@ -371,9 +370,8 @@ class Budgeting {
 
         // 今日が日曜日の場合、その週の月曜日から日曜日までの範囲を取得
         if (nowIsWhat == "weekend") {
-            val currentDateTime = LocalDate.now()
             // 実行した日が月の最後の日であり、新しい家計簿ファイルではない場合、空白を返す。
-            if (currentDateTime.dayOfMonth == 15 && currentDateTime.minusMonths(1).monthValue == setTime.takeLast(2)
+            if (today.dayOfMonth == 15 && today.minusMonths(1).monthValue == setTime.takeLast(2)
                     .toInt()
             ) {
                 return stringList
