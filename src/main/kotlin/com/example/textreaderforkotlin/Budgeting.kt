@@ -12,6 +12,7 @@ import org.apache.commons.csv.*
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.apache.poi.xssf.usermodel.*
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
 data class FileInfo(
@@ -35,32 +36,38 @@ fun main() {
 
 class Budgeting {
     private val setTime = "202312"
-    private val getFileDateName = generateDateList(setTime)
-    private val livingBudget = 200000
-    private val sendMailFlg = false
     private val lineFlg = true
-    private val userId = mapOf(
-        "jin" to "U42074d31b46e7259875f4777dce83eb1",
-        "honoka" to "U3a9070a4a77543224e2b0bcae38616d2"
-    )
     private val lastWeek = "SUNDAY"
+    // 12時過ぎたらこれをtrueにする
+    private val lateTime = false
+
     private var lastMonthDate = 15
     private var housingCost = "95000"
     private var palSystem = "13000"
     private var jinCost = "15000"
     private var telCost = "8000"
+    private val livingBudget = 200000
+    private val sendMailFlg = false
+    private val userId = mapOf(
+        "jin" to "U42074d31b46e7259875f4777dce83eb1",
+        "honoka" to "U3a9070a4a77543224e2b0bcae38616d2"
+    )
 
     // 下のデータは基本修正しない
     private val charSet = Charset.forName("Shift-JIS")
     private val dateFormat = SimpleDateFormat("yyyy/MM/dd")
     private var leftMoney = 0
+    private val getFileDateName = generateDateList(setTime)
     private val budgetingPath = "/Users/jin.ogura/Desktop/bugit/${getFileDateName[0]}/"
     private val alreadySpent = "${budgetingPath}使用履歴.xlsx"
     private val dCard = "${budgetingPath}${getFileDateName[2]}.csv"
     private val showDiffPath = "${budgetingPath}output.csv"
-    private val today: LocalDate = LocalDate.now()
+    private var today: LocalDate = LocalDate.now()
 
     fun run() {
+        if (lateTime) {
+            today = today.minusDays(1)
+        }
         val fileInfo = getFileInfo()
 
         if (fileInfo.dCardInfoTitle.any { it.contains("賃料等") }) {
@@ -334,7 +341,7 @@ class Budgeting {
 
     private fun generateDateList(startDate: String): List<String> {
         val dateFormat = SimpleDateFormat("yyyyMM", Locale.getDefault())
-        val startDateObj: Date = dateFormat.parse(startDate) ?: Date()
+        val startDateObj: Date = dateFormat.parse(startDate) ?: convertToLocalDateToDate(today)
 
         val calendar = Calendar.getInstance()
         calendar.time = startDateObj
@@ -354,7 +361,7 @@ class Budgeting {
         numbers: MutableList<Int>,
         dates: MutableList<Date>
     ): MutableList<String> {
-        val currentDate = Date() // 現在の日付を取得
+        val currentDate = convertToLocalDateToDate(today) // 現在の日付を取得
 
         val cal = Calendar.getInstance()
         cal.time = currentDate
@@ -476,5 +483,9 @@ class Budgeting {
             stringList.add("今週残ってる金額：${value.toInt() - weeklyTotalAmount}円")
         }
         return stringList
+    }
+    fun convertToLocalDateToDate(localDate: LocalDate): Date {
+        val zoneId: ZoneId = ZoneId.systemDefault()
+        return Date.from(localDate.atStartOfDay(zoneId).toInstant())
     }
 }
