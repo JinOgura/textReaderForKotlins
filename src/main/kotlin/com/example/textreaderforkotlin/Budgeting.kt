@@ -34,7 +34,8 @@ data class CsvData(
 )
 
 class Budgeting {
-    private val getFileDateName = generateDateList("202312")
+    private val setTime = "202312"
+    private val getFileDateName = generateDateList(setTime)
     private val livingBudget = 200000
     private val sendMailFlg = false
     private val lineFlg = true
@@ -111,18 +112,21 @@ class Budgeting {
         if (todayDayAndDate[0] == lastWeek) {
             val resultStringList = getResultStringList("weekend", resultInfo.titles, resultInfo.money, resultInfo.dates)
             resultWeek = "${resultStringList.joinToString(separator = "")}\n$result"
+            println(resultWeek)
         }
         if (todayDayAndDate[1] == lastMonthDate) {
             val resultStringList =
                 getResultStringList("monthend", resultInfo.titles, resultInfo.money, resultInfo.dates)
             resultMonth = "${resultStringList.joinToString(separator = "")}\n以上一ヶ月の決算です\n$result"
+            println(resultMonth)
         }
         if (todayDayAndDate[1] != lastMonthDate && todayDayAndDate[0] != lastWeek) {
             result = getResultStringList("nothing", resultInfo.titles, resultInfo.money, resultInfo.dates)
                 .joinToString(separator = "")
+            println(result)
         }
         if (sendMailFlg) {
-            if (todayDayAndDate[0] == lastWeek) {
+            if (todayDayAndDate[0] == lastWeek && resultWeek !== "") {
                 sendEmail(resultWeek)
             }
             if (todayDayAndDate[1] == lastMonthDate) {
@@ -133,20 +137,17 @@ class Budgeting {
             }
         }
         if (lineFlg) {
-            if (todayDayAndDate[0] == lastWeek) {
+            if (todayDayAndDate[0] == lastWeek && resultWeek !== "") {
                 sendMessageToLineBot(userId["jin"], resultWeek.replace("\n", """\n"""))
                 sendMessageToLineBot(userId["honoka"], resultWeek.replace("\n", """\n"""))
-                println(resultWeek)
             }
             if (todayDayAndDate[1] == lastMonthDate) {
                 sendMessageToLineBot(userId["jin"], resultMonth.replace("\n", """\n"""))
                 sendMessageToLineBot(userId["honoka"], resultMonth.replace("\n", """\n"""))
-                println(resultMonth)
             }
             if (todayDayAndDate[1] != lastMonthDate && todayDayAndDate[0] != lastWeek && result != "") {
                 sendMessageToLineBot(userId["jin"], result.replace("\n", """\n"""))
                 sendMessageToLineBot(userId["honoka"], result.replace("\n", """\n"""))
-                println(result)
             }
         }
     }
@@ -323,11 +324,11 @@ class Budgeting {
 
     private fun getRemainDays(): Int {
         val currentDateTime = LocalDate.now()
-        val current16th = currentDateTime.withDayOfMonth(lastMonthDate + 1)
-        val targetDate = if (currentDateTime.dayOfMonth < lastMonthDate + 1) {
-            current16th
+        val current15th = currentDateTime.withDayOfMonth(lastMonthDate)
+        val targetDate = if (currentDateTime.dayOfMonth < lastMonthDate) {
+            current15th
         } else {
-            current16th.plusMonths(1)
+            current15th.plusMonths(1)
         }
         return ChronoUnit.DAYS.between(currentDateTime, targetDate).toInt()
     }
@@ -370,6 +371,13 @@ class Budgeting {
 
         // 今日が日曜日の場合、その週の月曜日から日曜日までの範囲を取得
         if (nowIsWhat == "weekend") {
+            val currentDateTime = LocalDate.now()
+            // 実行した日が月の最後の日であり、新しい家計簿ファイルではない場合、空白を返す。
+            if (currentDateTime.dayOfMonth == 15 && currentDateTime.minusMonths(1).monthValue == setTime.takeLast(2)
+                    .toInt()
+            ) {
+                return stringList
+            }
             cal.add(Calendar.DAY_OF_WEEK, -6) // 今日から週の始め（月曜日）まで戻る
             val startDate = cal.time // 週の始め（月曜日）
             cal.add(Calendar.DAY_OF_WEEK, 6) // 週の終わり（日曜日）まで進む
