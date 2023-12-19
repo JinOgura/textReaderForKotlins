@@ -14,10 +14,6 @@ import org.apache.poi.xssf.usermodel.*
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
-fun main() {
-    Budgeting().run()
-}
-
 data class FileInfo(
     val alreadySpentTitle: MutableList<String?>,
     val alreadySpentMoney: MutableList<Int>,
@@ -32,6 +28,10 @@ data class CsvData(
     val money: MutableList<Int>,
     val dates: MutableList<Date>
 )
+
+fun main() {
+    Budgeting().run()
+}
 
 class Budgeting {
     private val setTime = "202312"
