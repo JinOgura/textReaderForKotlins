@@ -17,6 +17,7 @@ import java.time.temporal.ChronoUnit
 fun main() {
     Budgeting().run()
 }
+
 data class FileInfo(
     val alreadySpentTitle: MutableList<String?>,
     val alreadySpentMoney: MutableList<Int>,
@@ -135,14 +136,17 @@ class Budgeting {
             if (todayDayAndDate[0] == lastWeek) {
                 sendMessageToLineBot(userId["jin"], resultWeek.replace("\n", """\n"""))
                 sendMessageToLineBot(userId["honoka"], resultWeek.replace("\n", """\n"""))
+                println(resultWeek)
             }
             if (todayDayAndDate[1] == lastMonthDate) {
                 sendMessageToLineBot(userId["jin"], resultMonth.replace("\n", """\n"""))
                 sendMessageToLineBot(userId["honoka"], resultMonth.replace("\n", """\n"""))
+                println(resultMonth)
             }
             if (todayDayAndDate[1] != lastMonthDate && todayDayAndDate[0] != lastWeek && result != "") {
                 sendMessageToLineBot(userId["jin"], result.replace("\n", """\n"""))
                 sendMessageToLineBot(userId["honoka"], result.replace("\n", """\n"""))
+                println(result)
             }
         }
     }
@@ -455,7 +459,7 @@ class Budgeting {
             val value = lines[1].trim()
             val referenceDate = SimpleDateFormat("yyyy/MM/dd").parse(date)
             for (i in titles.indices) {
-                if(titles[i].contains("賃料等") || titles[i].contains("ドコモご利用料金") || titles[i].contains("パルシステム")) {
+                if (titles[i].contains("賃料等") || titles[i].contains("ドコモご利用料金") || titles[i].contains("パルシステム")) {
                     continue
                 }
                 if (dates[i].after(referenceDate)) {
