@@ -44,7 +44,7 @@ class Budgeting {
     private var lastMonthDate = 15
     private var housingCost = "95000"
     private var palSystem = "13000"
-    private var jinCost = "15000"
+    private var jinCost = "5000"
     private var telCost = "8000"
     private val livingBudget = 200000
     private val sendMailFlg = false
