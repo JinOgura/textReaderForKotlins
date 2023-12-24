@@ -38,6 +38,7 @@ class Budgeting {
     private val setTime = "202312"
     private val lineFlg = true
     private val lastWeek = "SUNDAY"
+
     // 12時過ぎたらこれをtrueにする
     private val lateTime = false
 
@@ -410,6 +411,9 @@ class Budgeting {
                 var dailyTotalAmount = 0 // 日ごとの金額の総額
 
                 for (index in indices) {
+                    if (titles[index].contains("賃料等") || titles[index].contains("ドコモご利用料金") || titles[index].contains("パルシステム")) {
+                        continue
+                    }
                     val title = titles[index]
                     val amount = numbers[index]
                     stringList.add("$title: ${amount}円\n")
@@ -484,6 +488,7 @@ class Budgeting {
         }
         return stringList
     }
+
     private fun convertToLocalDateToDate(localDate: LocalDate): Date {
         val zoneId: ZoneId = ZoneId.systemDefault()
         return Date.from(localDate.atStartOfDay(zoneId).toInstant())
