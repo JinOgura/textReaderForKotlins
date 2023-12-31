@@ -102,12 +102,13 @@ class Budgeting {
         if (fileInfo.dCardInfoTitle.size == 0) {
             outputResult = "家計簿とDカード利用明細に相違点なし"
         }
-        val paid = fileInfo.dCardInfoMoney.sum() + fileInfo.alreadySpentMoney.sum()
         val housingCostInt = housingCost.toIntOrNull() ?: 0
         val palSystemInt = palSystem.toIntOrNull() ?: 0
         val telCostInt = telCost.toIntOrNull() ?: 0
         val jinCostInt = jinCost.toIntOrNull() ?: 0
-        leftMoney = livingBudget - paid - housingCostInt - palSystemInt - telCostInt - jinCostInt
+        val paid =
+            fileInfo.dCardInfoMoney.sum() + fileInfo.alreadySpentMoney.sum() + housingCostInt + palSystemInt + telCostInt + jinCostInt
+        leftMoney = livingBudget - paid
         var result = "使える金額: ${leftMoney}円" +
                 "\n使った金額: ${paid}円\n\n概算内容: 家賃等(${housingCost}), パルシステム(${palSystem}), 携帯料金(${telCost}),\n ジンお小遣い(${jinCost}(確定))\n\n" +
                 outputResult
