@@ -41,13 +41,13 @@ class Budgeting {
 
     // 12時過ぎたらこれをtrueにする
     private val lateTime = false
+    private val livingBudget = 210000
 
     private var lastMonthDate = 15
     private var housingCost = "95000"
     private var palSystem = "13000"
     private var jinCost = "5000"
     private var telCost = "8000"
-    private val livingBudget = 200000
     private val sendMailFlg = false
     private val userId = mapOf(
         "jin" to "U42074d31b46e7259875f4777dce83eb1",
