@@ -44,10 +44,6 @@ class Budgeting {
     private val livingBudget = 210000
 
     private var lastMonthDate = 15
-    private var housingCost = "95000"
-    private var palSystem = "13000"
-    private var jinCost = "5000"
-    private var telCost = "8000"
     private val sendMailFlg = false
     private val userId = mapOf(
         "jin" to "U42074d31b46e7259875f4777dce83eb1",
@@ -70,16 +66,7 @@ class Budgeting {
             today = today.minusDays(1)
         }
         val fileInfo = getFileInfo()
-
-        if (fileInfo.dCardInfoTitle.any { it.contains("賃料等") }) {
-            housingCost = "確定"
-        }
-        if (fileInfo.dCardInfoTitle.any { it.contains("ドコモご利用料金") }) {
-            telCost = "確定"
-        }
-        if (fileInfo.dCardInfoTitle.any { it.contains("パルシステム") }) {
-            palSystem = "確定"
-        }
+        checkFixedExpenses(null, fileInfo)
         for (moneyAmount in fileInfo.alreadySpentMoney) {
             val i = fileInfo.dCardInfoMoney.indexOf(moneyAmount)
             if (i != -1) {
@@ -102,16 +89,12 @@ class Budgeting {
         if (fileInfo.dCardInfoTitle.size == 0) {
             outputResult = "家計簿とDカード利用明細に相違点なし"
         }
-        val housingCostInt = housingCost.toIntOrNull() ?: 0
-        val palSystemInt = palSystem.toIntOrNull() ?: 0
-        val telCostInt = telCost.toIntOrNull() ?: 0
-        val jinCostInt = jinCost.toIntOrNull() ?: 0
+
         val paid =
-            fileInfo.dCardInfoMoney.sum() + fileInfo.alreadySpentMoney.sum() + housingCostInt + palSystemInt + telCostInt + jinCostInt
+            fileInfo.dCardInfoMoney.sum() + fileInfo.alreadySpentMoney.sum() + unpaidFixedExpenses
         leftMoney = livingBudget - paid
         var result = "使える金額: ${leftMoney}円" +
-                "\n使った金額: ${paid}円\n\n概算内容: 家賃等(${housingCost}), パルシステム(${palSystem}), 携帯料金(${telCost}),\n ジンお小遣い(${jinCost}(確定))\n\n" +
-                outputResult
+                "\n使った金額: ${paid}円" + fixedMoneyTxt + outputResult
         println(result)
         val todayDayAndDate = listOf(today.dayOfWeek.toString(), today.dayOfMonth)
 
@@ -411,12 +394,12 @@ class Budgeting {
 
                 var dailyTotalAmount = 0 // 日ごとの金額の総額
 
-                for (index in indices) {
-                    if (titles[index].contains("賃料等") || titles[index].contains("ドコモご利用料金") || titles[index].contains("パルシステム")) {
+                for (i in indices) {
+                    if (checkFixedExpenses(titles[i], null)) {
                         continue
                     }
-                    val title = titles[index]
-                    val amount = numbers[index]
+                    val title = titles[i]
+                    val amount = numbers[i]
                     stringList.add("$title: ${amount}円\n")
                     dailyTotalAmount += amount
                 }
@@ -473,21 +456,58 @@ class Budgeting {
                 System.err.println("エラー: weekendResult.txtが存在しません")
                 return stringList
             }
-            val date = lines[0].trim()
-            val value = lines[1].trim()
-            val referenceDate = SimpleDateFormat("yyyy/MM/dd").parse(date)
+            val startDate = SimpleDateFormat("yyyy/MM/dd").parse(lines[0].trim())
+            val endDate = Calendar.getInstance()
+            endDate.time = startDate
+            endDate.add(Calendar.DAY_OF_MONTH, 7)
             for (i in titles.indices) {
-                if (titles[i].contains("賃料等") || titles[i].contains("ドコモご利用料金") || titles[i].contains("パルシステム")) {
+                if (checkFixedExpenses(titles[i], null)) {
                     continue
                 }
-                if (dates[i].after(referenceDate)) {
+                if (dates[i].after(startDate) && dates[i].before(endDate.time)) {
                     val amount = numbers[i]
                     weeklyTotalAmount += amount
                 }
             }
-            stringList.add("今週残ってる金額：${value.toInt() - weeklyTotalAmount}円")
+            stringList.add("今週残ってる金額：${lines[1].trim().toInt() - weeklyTotalAmount}円")
         }
         return stringList
+    }
+
+    private var housingCost = "95000"
+    private var palSystem = "13000"
+    private var jinCost = "5000"
+    private var telCost = "8000"
+    private var hotel = "16320"
+    private var unpaidFixedExpenses = 0
+    private var fixedMoneyTxt = ""
+    private fun checkFixedExpenses(title: String?, fileInfo: FileInfo?): Boolean {
+        val fixedExpenseKeywords = listOf("賃料等", "ドコモご利用料金", "パルシステム", "ホテル")
+        if (!title.isNullOrEmpty() && fixedExpenseKeywords.any { title.contains(it) }) {
+            return true
+        }
+        if (fileInfo !== null) {
+            if (fileInfo.dCardInfoTitle.any { it.contains("賃料等") }) {
+                housingCost = "確定"
+            }
+            if (fileInfo.dCardInfoTitle.any { it.contains("ドコモご利用料金") }) {
+                telCost = "確定"
+            }
+            if (fileInfo.dCardInfoTitle.any { it.contains("パルシステム") }) {
+                palSystem = "確定"
+            }
+            if (fileInfo.dCardInfoTitle.any { it.contains("ホテル") }) {
+                hotel = "確定"
+            }
+            val housingCostInt = housingCost.toIntOrNull() ?: 0
+            val palSystemInt = palSystem.toIntOrNull() ?: 0
+            val telCostInt = telCost.toIntOrNull() ?: 0
+            val jinCostInt = jinCost.toIntOrNull() ?: 0
+            val hotelInt = hotel.toIntOrNull() ?: 0
+            unpaidFixedExpenses = housingCostInt + palSystemInt + telCostInt + jinCostInt + hotelInt
+            fixedMoneyTxt = "\n\n概算内容: 家賃等(${housingCost}), パルシステム(${palSystem}), 携帯料金(${telCost}),\n ジンお小遣い(${jinCost}), ホテル料金(${hotel})\n\n"
+        }
+        return false
     }
 
     private fun convertToLocalDateToDate(localDate: LocalDate): Date {
