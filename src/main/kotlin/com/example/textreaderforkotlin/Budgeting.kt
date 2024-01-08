@@ -415,7 +415,10 @@ class Budgeting {
             if (remainDays < 7) {
                 multiple = remainDays
             }
-            val nextWeekAllowance = leftMoney / remainDays * multiple
+            var nextWeekAllowance = leftMoney / remainDays * multiple
+            if(nextWeekAllowance < 0) {
+                nextWeekAllowance = leftMoney
+            }
             val stringEndDate = SimpleDateFormat("yyyy/MM/dd").format(endDate)
             stringList.add("次の週に使える金額：${nextWeekAllowance}\n")
             val outputFile = File("${budgetingPath}weekEndResult.txt")
