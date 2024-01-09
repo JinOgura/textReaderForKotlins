@@ -60,6 +60,8 @@ class Budgeting {
     private val dCard = "${budgetingPath}${getFileDateName[2]}.csv"
     private val showDiffPath = "${budgetingPath}output.csv"
     private var today: LocalDate = LocalDate.now()
+    private var unpaidFixedExpenses = 0
+    private var fixedMoneyTxt = ""
 
     fun run() {
         if (lateTime) {
@@ -477,14 +479,12 @@ class Budgeting {
         return stringList
     }
 
-    private var housingCost = "95000"
-    private var palSystem = "13000"
-    private var jinCost = "5000"
-    private var telCost = "8000"
-    private var hotel = "16320"
-    private var unpaidFixedExpenses = 0
-    private var fixedMoneyTxt = ""
     private fun checkFixedExpenses(title: String?, fileInfo: FileInfo?): Boolean {
+        var housingCost = "95000"
+        var palSystem = "13000"
+        val jinCost = "5000"
+        var telCost = "8000"
+        var hotel = "16320"
         val fixedExpenseKeywords = listOf("賃料等", "ドコモご利用料金", "パルシステム", "ホテル")
         if (!title.isNullOrEmpty() && fixedExpenseKeywords.any { title.contains(it) }) {
             return true
